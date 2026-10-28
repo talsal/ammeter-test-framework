@@ -170,7 +170,6 @@ src/
 examples/programmatic_usage.py
 tests/                     232 tests
 results/samples/           committed sample runs (everything else under results/ is git-ignored)
-Exam/                      the exercise specification
 ```
 
 ## Tests
