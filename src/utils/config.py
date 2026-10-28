@@ -5,6 +5,7 @@ combinations raise ConfigError with the path of the offending key, so a typo in
 config.yaml fails immediately instead of silently running a different test.
 """
 import dataclasses
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional, Tuple, Union
@@ -117,12 +118,13 @@ class Config:
     logging: LoggingConfig = field(default_factory=LoggingConfig)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Plain-dict snapshot (JSON-serialisable), including the derived sampling values."""
+        """Plain-dict snapshot, including the derived sampling values. JSON-native types only
+        (tuples become lists), so it compares equal after a save/load round trip."""
         data = dataclasses.asdict(self)
         data["sampling"].update(count=self.sampling.count,
                                 interval_seconds=self.sampling.interval_seconds,
                                 duration_seconds=self.sampling.duration_seconds)
-        return data
+        return json.loads(json.dumps(data))
 
 
 # ---------------------------------------------------------------------- parsing helpers
