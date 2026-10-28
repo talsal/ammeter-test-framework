@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Sequence, Tuple
 
 from Ammeters import EMULATORS
+from Ammeters.faulty import FaultyEmulator
 from src.ammeter_client import AmmeterClient
 from src.analysis import AnalysisResult, analyze
 from src.results_store import ResultsStore, RunRecord
@@ -82,19 +83,24 @@ def running_emulators(config: Config, names: Sequence[str]) -> Iterator[None]:
     sleep-and-hope. The emulators' print() output is redirected to DEBUG logs.
     """
     with ExitStack() as stack:
+        # Entered first, so it is restored last: after every emulator has stopped printing.
+        stack.enter_context(redirect_stdout(_LogWriter(emulator_output)))
         for name in names:
             emulator_class = EMULATORS.get(name)
             if emulator_class is None:
                 raise RunnerError(f"no emulator available for {name!r}; run with --external if it "
                                   f"is already running")
             ammeter = config.ammeters[name]
+            emulator = emulator_class(ammeter.port, host=ammeter.host)
+            if ammeter.faults and ammeter.faults.total_rate > 0:
+                logger.warning("%s: simulating faults %s", name, ammeter.faults)
+                emulator = FaultyEmulator(emulator, ammeter.faults, ammeter.port, host=ammeter.host)
             try:
-                stack.enter_context(emulator_class(ammeter.port, host=ammeter.host))
+                stack.enter_context(emulator)
             except OSError as exc:
                 raise RunnerError(f"cannot start the {name} emulator on {ammeter.host}:{ammeter.port} "
                                   f"({exc}). If it is already running, use --external") from exc
             logger.info("started %s emulator on port %d", name, ammeter.port)
-        stack.enter_context(redirect_stdout(_LogWriter(emulator_output)))
         yield
 
 

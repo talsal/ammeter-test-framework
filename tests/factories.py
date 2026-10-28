@@ -46,6 +46,7 @@ def raw_config(names=("greenlee", "entes", "circutor"), count=5, hz=100, retries
     return {"testing": {"sampling": {"measurements_count": count, "sampling_frequency_hz": hz}},
             "ammeters": ammeters,
             "client": {"timeout_seconds": timeout, "retries": retries, "retry_delay_seconds": 0.0},
+            "analysis": {"visualization": {"enabled": False}},   # plots are slow; tests that need them enable them
             "logging": {"level": "WARNING", "to_file": False}}
 
 

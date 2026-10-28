@@ -4,7 +4,7 @@ import pytest
 from Ammeters.Circutor_Ammeter import CircutorAmmeter
 from Ammeters.Entes_Ammeter import EntesAmmeter
 from Ammeters.Greenlee_Ammeter import GreenleeAmmeter
-from src.utils.config import ConfigError, SamplingConfig, load_config, parse_config
+from src.utils.config import ConfigError, FaultProfile, SamplingConfig, load_config, parse_config
 
 AMMETERS = {"greenlee": {"port": 5000, "command": "A"}}
 
@@ -102,7 +102,7 @@ def test_defaults_are_applied_for_optional_sections():
     config = parse_config(make())
     assert config.ammeters["greenlee"].host == "127.0.0.1"   # explicit IPv4, see config.yaml
     assert config.client.retries == 2
-    assert config.visualization.plot_types == ("histogram", "time_series")
+    assert config.visualization.plot_types == ("histogram", "time_series", "precision")
 
 
 # ---------------------------------------------------------------- file handling
@@ -124,3 +124,33 @@ def test_empty_file_raises_config_error(tmp_path):
     empty.write_text("")
     with pytest.raises(ConfigError, match="mapping"):
         load_config(empty)
+
+
+# ---------------------------------------------------------------- fault profiles
+
+def test_faults_are_parsed_per_ammeter():
+    raw = make(ammeters={"x": {"port": 5000, "command": "A", "faults": {"drop_rate": 0.1, "seed": 7}},
+                         "y": {"port": 5001, "command": "B"}})
+    ammeters = parse_config(raw).ammeters
+    assert ammeters["x"].faults == FaultProfile(drop_rate=0.1, seed=7)
+    assert ammeters["y"].faults is None
+
+
+@pytest.mark.parametrize("faults, fragment", [
+    ({"drop_rate": 1.5}, "between 0 and 1"),
+    ({"drop_rate": -0.1}, "faults.drop_rate"),
+    ({"drop_rate": 0.6, "error_rate": 0.6}, "sum to more than 1"),
+    ({"delay_seconds": 0}, "delay_seconds"),
+    ({"drop_rate": "often"}, "faults.drop_rate"),
+    ({"crash_rate": 0.1}, "unknown key"),
+    ({"seed": 1.5}, "faults.seed"),
+])
+def test_invalid_fault_profiles_are_rejected(faults, fragment):
+    raw = make(ammeters={"x": {"port": 5000, "command": "A", "faults": faults}})
+    with pytest.raises(ConfigError, match=fragment):
+        parse_config(raw)
+
+
+def test_fault_profile_is_part_of_the_config_snapshot():
+    raw = make(ammeters={"x": {"port": 5000, "command": "A", "faults": {"garbage_rate": 0.2}}})
+    assert parse_config(raw).to_dict()["ammeters"]["x"]["faults"]["garbage_rate"] == 0.2

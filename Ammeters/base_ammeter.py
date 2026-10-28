@@ -110,16 +110,19 @@ class AmmeterEmulatorBase(ABC):
             conn.settimeout(self._client_timeout)
             try:
                 data = conn.recv(1024)
-                conn.sendall(self.handle_request(data))
+                response = self.handle_request(data)
+                if response is not None:
+                    conn.sendall(response)
             except socket.timeout:
                 logger.warning("Client %s sent no request within %ss", addr, self._client_timeout)
             except OSError:
                 logger.warning("Connection error with client %s", addr, exc_info=True)
 
-    def handle_request(self, data: bytes) -> bytes:
+    def handle_request(self, data: bytes) -> Optional[bytes]:
         """
-        Maps a raw request to the raw response. Kept separate from the socket code
-        so it is easy to test and to override (e.g. to inject faults).
+        Maps a raw request to the raw response (None: close the connection without replying).
+        Kept separate from the socket code so it is easy to test and to override, which is
+        how FaultyEmulator injects faults.
         """
         if data != self.get_current_command:
             logger.warning("Unknown command received: %r", data)

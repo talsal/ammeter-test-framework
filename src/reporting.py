@@ -3,6 +3,7 @@ reloaded one are reported identically."""
 from pathlib import Path
 from typing import List, Optional, Sequence
 
+from src.comparison import AmmeterRanking
 from src.results_store import Comparison, RunRecord, RunSummary
 
 
@@ -30,6 +31,20 @@ def render_table(headers: Sequence[str], rows: Sequence[Sequence[str]]) -> str:
     return "\n".join([line(headers), "  ".join("-" * w for w in widths)] + [line(r) for r in rows])
 
 
+def _fault_summary(record: RunRecord) -> str:
+    """e.g. 'circutor (drop 20%, garbage 10%)'; empty if no faults were configured for the run."""
+    parts = []
+    for name, ammeter in sorted(record.config.get("ammeters", {}).items()):
+        faults = ammeter.get("faults")
+        if not faults:
+            continue
+        kinds = [f"{kind} {faults[kind + '_rate']:.0%}" for kind in ("drop", "delay", "garbage", "error")
+                 if faults.get(kind + "_rate")]
+        if kinds:
+            parts.append(f"{name} ({', '.join(kinds)})")
+    return "; ".join(parts)
+
+
 def format_run(record: RunRecord, path: Optional[Path] = None) -> str:
     """Full report of one run: header, one statistics row per ammeter, then problems found."""
     plan = record.config["sampling"]
@@ -39,6 +54,9 @@ def format_run(record: RunRecord, path: Optional[Path] = None) -> str:
              f"({1 / plan['interval_seconds']:.4g} Hz), {plan['duration_seconds']:.4g} s"]
     if path is not None:
         lines.append(f"Saved:   {path}")
+    simulated = _fault_summary(record)
+    if simulated:
+        lines.append(f"Faults:  SIMULATED for {simulated}")
 
     headers = ["Ammeter", "OK", "Mean (A)", "Median (A)", "Stdev (A)", "Min (A)", "Max (A)", "CV",
                "Outliers", "Consistency", "Latency (ms)", "Max late (ms)"]
@@ -80,3 +98,18 @@ def format_comparison(comparison: Comparison) -> str:
         change = "-" if m.change_pct is None else f"{m.change_pct:+.1f}%"
         rows.append([f"{m.ammeter} {m.metric}"] + [_fmt(v) for v in m.values] + [change])
     return "\n".join(lines + ["", render_table(headers, rows)])
+
+
+def format_ranking(ranking: AmmeterRanking) -> str:
+    """Reliability/precision ranking of the ammeters in one run."""
+    headers = ["Rank", "Ammeter", "Success", "CV", "CV 95% interval", "IQR/median", "Latency (ms)"]
+    rows = []
+    for s in ranking.scores:
+        interval = "-" if s.cv_low is None else f"{s.cv_low * 100:.1f}% .. {s.cv_high * 100:.1f}%"
+        rows.append([str(s.rank), s.ammeter, f"{s.success_rate:.0%}", _pct(s.cv), interval,
+                     _pct(s.relative_iqr), _ms(s.latency_mean_s)])
+    best = ranking.most_reliable or "none (no ammeter produced a reading)"
+    lines = ["Ammeter ranking (reliability first, then precision):", "", render_table(headers, rows), "",
+             f"Most reliable: {best}"]
+    lines += [f"Note: {note}" for note in ranking.notes]
+    return "\n".join(lines)

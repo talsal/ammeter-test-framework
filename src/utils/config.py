@@ -13,12 +13,40 @@ from typing import Any, Dict, Mapping, Optional, Tuple, Union
 import yaml
 
 DEFAULT_CONFIG_PATH = Path(__file__).resolve().parents[2] / "config" / "config.yaml"
-PLOT_TYPES = ("histogram", "time_series")
+PLOT_TYPES = ("histogram", "time_series", "precision")
 LOG_LEVELS = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 
 
 class ConfigError(ValueError):
     """The configuration file is missing, malformed or inconsistent."""
+
+
+@dataclass(frozen=True)
+class FaultProfile:
+    """
+    Error simulation for an in-process emulator. Each request suffers at most one fault,
+    chosen at random with these probabilities (they must not sum to more than 1).
+    A fixed ``seed`` makes the fault sequence reproducible.
+    """
+    drop_rate: float = 0.0       # close the connection without replying
+    delay_rate: float = 0.0      # reply only after delay_seconds
+    garbage_rate: float = 0.0    # reply with something that is not a number
+    error_rate: float = 0.0      # reply with an ERROR line
+    delay_seconds: float = 3.0
+    seed: Optional[int] = None
+
+    def __post_init__(self) -> None:
+        rates = (self.drop_rate, self.delay_rate, self.garbage_rate, self.error_rate)
+        if any(not 0.0 <= r <= 1.0 for r in rates):
+            raise ConfigError(f"faults: every rate must be between 0 and 1, got {rates}")
+        if sum(rates) > 1.0 + 1e-9:
+            raise ConfigError(f"faults: the rates must not sum to more than 1, got {sum(rates):.3f}")
+        if self.delay_seconds <= 0:
+            raise ConfigError(f"faults.delay_seconds: must be > 0, got {self.delay_seconds}")
+
+    @property
+    def total_rate(self) -> float:
+        return self.drop_rate + self.delay_rate + self.garbage_rate + self.error_rate
 
 
 @dataclass(frozen=True)
@@ -28,6 +56,7 @@ class AmmeterConfig:
     host: str
     port: int
     command: str
+    faults: Optional[FaultProfile] = None   # simulate failures (only for emulators we start ourselves)
 
     @property
     def command_bytes(self) -> bytes:
@@ -166,6 +195,24 @@ def _string(section: Mapping, key: str, where: str, default: Optional[str] = Non
     return value
 
 
+def _parse_faults(entry: Mapping, ammeter_where: str) -> Optional[FaultProfile]:
+    section = _section(entry, "faults", f"{ammeter_where}.")
+    if not section:
+        return None
+    where = f"{ammeter_where}.faults"
+    _reject_unknown(section, ("drop_rate", "delay_rate", "garbage_rate", "error_rate", "delay_seconds", "seed"),
+                    where)
+    d = FaultProfile()
+    return FaultProfile(
+        drop_rate=_number(section, "drop_rate", where, d.drop_rate, inclusive=True),
+        delay_rate=_number(section, "delay_rate", where, d.delay_rate, inclusive=True),
+        garbage_rate=_number(section, "garbage_rate", where, d.garbage_rate, inclusive=True),
+        error_rate=_number(section, "error_rate", where, d.error_rate, inclusive=True),
+        delay_seconds=_number(section, "delay_seconds", where, d.delay_seconds),
+        seed=_number(section, "seed", where, integer=True, inclusive=True),
+    )
+
+
 def _parse_ammeters(raw: Mapping) -> Dict[str, AmmeterConfig]:
     section = _section(raw, "ammeters")
     if not section:
@@ -175,7 +222,7 @@ def _parse_ammeters(raw: Mapping) -> Dict[str, AmmeterConfig]:
         where = f"ammeters.{name}"
         if not isinstance(entry, Mapping):
             raise ConfigError(f"{where}: expected a mapping with host/port/command")
-        _reject_unknown(entry, ("host", "port", "command"), where)
+        _reject_unknown(entry, ("host", "port", "command", "faults"), where)
         port = _number(entry, "port", where, integer=True)
         if port is None or port > 65535:
             raise ConfigError(f"{where}.port: required, an integer in 1..65535, got {port!r}")
@@ -184,6 +231,7 @@ def _parse_ammeters(raw: Mapping) -> Dict[str, AmmeterConfig]:
             host=_string(entry, "host", where, default="127.0.0.1"),
             port=port,
             command=_string(entry, "command", where),
+            faults=_parse_faults(entry, where),
         )
     return ammeters
 

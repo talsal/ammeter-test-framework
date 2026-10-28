@@ -162,3 +162,88 @@ def test_external_mode_against_emulators_running_in_another_process(cfg, tmp_pat
         proc.wait(timeout=5)
     out = capsys.readouterr().out
     assert out.count("4/4") == 3 and "No failed samples" in out
+
+
+# ---------------------------------------------------------------- ranking, plots, simulated faults
+
+def with_visualization(cfg_path, enabled=True):
+    raw = yaml.safe_load(open(cfg_path))
+    raw["analysis"] = {"visualization": {"enabled": enabled, "plot_types": ["histogram", "precision"]}}
+    open(cfg_path, "w").write(yaml.safe_dump(raw))
+
+
+def test_run_prints_the_ammeter_ranking(cfg, capsys):
+    assert main(["run", "--config", cfg]) == EXIT_OK
+    out = capsys.readouterr().out
+    assert "Ammeter ranking" in out and "Most reliable:" in out and "not accuracy" in out
+
+
+def test_ranking_is_skipped_for_a_single_ammeter(cfg, capsys):
+    main(["run", "--config", cfg, "-a", "entes"])
+    assert "Ammeter ranking" not in capsys.readouterr().out
+
+
+def test_run_writes_plots_next_to_the_archive(cfg, tmp_path, capsys):
+    pytest.importorskip("matplotlib")
+    with_visualization(cfg)
+    assert main(["run", "--config", cfg]) == EXIT_OK
+    run_id = stored_runs(tmp_path)[0].stem
+    plots = sorted(p.name for p in (tmp_path / "results" / "plots" / run_id).iterdir())
+    assert plots == ["histogram.png", "precision.png"]          # the types listed in the config
+    assert "Plots:" in capsys.readouterr().out
+
+
+def test_no_plots_flag_and_no_save_skip_plotting(cfg, tmp_path):
+    with_visualization(cfg)
+    main(["run", "--config", cfg, "--no-plots", "-a", "entes"])
+    main(["run", "--config", cfg, "--no-save", "-a", "entes"])
+    assert not (tmp_path / "results" / "plots").exists()
+
+
+def test_missing_matplotlib_only_warns_during_a_run(cfg, tmp_path, monkeypatch, capsys):
+    with_visualization(cfg)
+    monkeypatch.setitem(__import__("sys").modules, "matplotlib", None)
+    assert main(["run", "--config", cfg, "-a", "entes"]) == EXIT_OK        # the run itself still succeeds
+    assert len(stored_runs(tmp_path)) == 1
+    assert "plots skipped" in capsys.readouterr().err
+
+
+def test_plot_command_regenerates_plots_for_an_archived_run(cfg, tmp_path):
+    pytest.importorskip("matplotlib")
+    main(["run", "--config", cfg, "-a", "entes", "greenlee"])               # visualization disabled in this config
+    assert main(["plot", "latest", "--config", cfg, "-t", "time_series"]) == EXIT_OK
+    run_id = stored_runs(tmp_path)[0].stem
+    assert [p.name for p in (tmp_path / "results" / "plots" / run_id).iterdir()] == ["time_series.png"]
+
+
+def test_plot_command_without_matplotlib_is_an_error(cfg, monkeypatch, capsys):
+    main(["run", "--config", cfg, "-a", "entes"])
+    monkeypatch.setitem(__import__("sys").modules, "matplotlib", None)
+    assert main(["plot", "latest", "--config", cfg]) == EXIT_ERROR
+    assert "pip install matplotlib" in capsys.readouterr().err
+
+
+def test_simulated_faults_are_survived_reported_and_recorded(cfg, tmp_path, capsys):
+    raw = yaml.safe_load(open(cfg))
+    raw["testing"]["sampling"] = {"measurements_count": 30, "sampling_frequency_hz": 200}
+    raw["ammeters"]["entes"]["faults"] = {"drop_rate": 0.3, "garbage_rate": 0.1, "seed": 4}
+    raw["ammeters"]["circutor"]["faults"] = {"error_rate": 1.0}             # permanently broken
+    open(cfg, "w").write(yaml.safe_dump(raw))
+
+    assert main(["run", "--config", cfg]) == EXIT_SAMPLE_FAILURES          # finished, but with failures
+    out = capsys.readouterr().out
+    assert "Faults:  SIMULATED for circutor (error 100%); entes (drop 30%, garbage 10%)" in out
+    assert "circutor: 30 failed sample(s): AmmeterRejectedError x30" in out
+    assert "AmmeterMalformedResponseError" in out                            # entes: drops and garbage
+    run = json.loads(stored_runs(tmp_path)[0].read_text())
+    assert run["ammeters"]["greenlee"]["analysis"]["successful"] == 30       # the healthy one is unaffected
+    assert run["ammeters"]["circutor"]["analysis"]["current"] is None
+    assert run["config"]["ammeters"]["entes"]["faults"]["drop_rate"] == 0.3  # recorded with the run
+    assert "Most reliable: greenlee" in out                                  # broken ammeters rank below
+
+
+def test_the_shipped_faulty_example_config_runs():
+    from src.utils.config import load_config
+    config = load_config("config/faulty_example.yaml")
+    assert config.ammeters["entes"].faults.drop_rate == 0.20
+    assert config.ammeters["greenlee"].faults is None

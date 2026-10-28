@@ -27,6 +27,9 @@ ammeters:
     host: 127.0.0.1
     port: 5002
     command: "MEASURE_CIRCUTOR -get_measurement -current"
+    # Error simulation (only for emulators this framework starts itself): add to any ammeter, e.g.
+    # faults: {drop_rate: 0.1, garbage_rate: 0.05, delay_rate: 0.1, delay_seconds: 3, error_rate: 0.05, seed: 1}
+    # Each request suffers at most one fault; see config/faulty_example.yaml for a complete example.
 
 client:
   timeout_seconds: 2.0      # per attempt
@@ -36,8 +39,8 @@ client:
 analysis:
   outlier_z_threshold: 3.0  # |z-score| above this counts as an outlier
   visualization:
-    enabled: true           # requires matplotlib (optional); skipped with a warning if missing
-    plot_types: [histogram, time_series]
+    enabled: true           # PNG plots next to each archived run; requires matplotlib (optional), skipped with a warning if missing
+    plot_types: [histogram, time_series, precision]
 
 result_management:
   directory: results

@@ -3,18 +3,23 @@
 Exit codes: 0 success, 1 the run completed but some samples failed, 2 usage/config/storage error.
 """
 import argparse
+import logging
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
-from src.reporting import format_comparison, format_run, format_run_list
-from src.results_store import ResultsError, ResultsStore
+from src.comparison import compare_ammeters
+from src.plotting import PLOTS, PlottingUnavailableError, plot_run
+from src.reporting import format_comparison, format_ranking, format_run, format_run_list
+from src.results_store import ResultsError, ResultsStore, RunRecord
 from src.runner import RunnerError, apply_sampling_overrides, execute_run, has_failures, select_ammeters
 from src.utils.config import DEFAULT_CONFIG_PATH, ConfigError, load_config
 from src.utils.logger import setup_logging
 
 EXIT_OK, EXIT_SAMPLE_FAILURES, EXIT_ERROR = 0, 1, 2
+
+logger = logging.getLogger(__name__)
 
 
 def _positive_int(text: str) -> int:
@@ -37,7 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
     common.add_argument("--results-dir", help="where runs are stored (default: result_management.directory from the config)")
 
     parser = argparse.ArgumentParser(prog="main.py", description="Ammeter test framework.")
-    commands = parser.add_subparsers(dest="command", metavar="{run,list,show,compare}")
+    commands = parser.add_subparsers(dest="command", metavar="{run,list,show,plot,compare}")
 
     run = commands.add_parser("run", parents=[common], help="sample the ammeters, analyse and archive (default command)")
     run.add_argument("-a", "--ammeter", nargs="+", metavar="NAME", help="ammeters to test (default: all in the config)")
@@ -47,13 +52,18 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("-l", "--label", help="free-text label stored with the run")
     run.add_argument("--external", action="store_true",
                      help="do not start the emulators; use ammeters that are already running")
-    run.add_argument("--no-save", action="store_true", help="do not archive the run")
+    run.add_argument("--no-save", action="store_true", help="do not archive the run (also skips plots)")
+    run.add_argument("--no-plots", action="store_true", help="do not write plots even if the config enables them")
     run.add_argument("--log-level", choices=["DEBUG", "INFO", "WARNING", "ERROR"], help="override logging.level")
 
     commands.add_parser("list", parents=[common], help="list archived runs, newest first")
 
     show = commands.add_parser("show", parents=[common], help="print the report of an archived run")
     show.add_argument("run", help="run id, unique prefix, or 'latest'")
+
+    plot = commands.add_parser("plot", parents=[common], help="write plots (PNG) for an archived run; needs matplotlib")
+    plot.add_argument("run", help="run id, unique prefix, or 'latest'")
+    plot.add_argument("-t", "--types", nargs="+", choices=list(PLOTS), help="plot types (default: those in the config)")
 
     compare = commands.add_parser("compare", parents=[common], help="compare metrics across archived runs")
     compare.add_argument("runs", nargs="+", metavar="RUN", help="two or more run ids / prefixes / 'latest'")
@@ -80,8 +90,31 @@ def _cmd_run(args: argparse.Namespace) -> int:
     store = None if args.no_save else ResultsStore(results_dir)
     record, path = execute_run(config, names, label=args.label, start_emulators=not args.external, store=store,
                                  started=started)
-    print(format_run(record, path))
+    print(_full_report(record, path))
+    if store is not None and config.visualization.enabled and not args.no_plots:
+        _write_plots(record, results_dir, config.visualization.plot_types, required=False)
     return EXIT_SAMPLE_FAILURES if has_failures(record) else EXIT_OK
+
+
+def _full_report(record: RunRecord, path: Optional[Path]) -> str:
+    """Run report, plus the ammeter ranking when there is more than one ammeter to rank."""
+    report = format_run(record, path)
+    if len(record.ammeters) > 1:
+        report += "\n\n" + format_ranking(compare_ammeters(record))
+    return report
+
+
+def _write_plots(record: RunRecord, results_dir: Path, plot_types, required: bool) -> None:
+    """Plots go to <results dir>/plots/<run id>/. matplotlib is optional: a missing install only
+    skips the plots when they were not explicitly requested."""
+    try:
+        files = plot_run(record, results_dir / "plots" / record.run_id, plot_types)
+    except PlottingUnavailableError as exc:
+        if required:
+            raise
+        logger.warning("plots skipped: %s", exc)
+        return
+    print(f"\nPlots: {files[0].parent} ({', '.join(f.name for f in files)})")
 
 
 def _store_for(args: argparse.Namespace) -> ResultsStore:
@@ -97,7 +130,15 @@ def _cmd_list(args: argparse.Namespace) -> int:
 def _cmd_show(args: argparse.Namespace) -> int:
     store = _store_for(args)
     record = store.load(args.run)
-    print(format_run(record, store.path_for(record.run_id)))
+    print(_full_report(record, store.path_for(record.run_id)))
+    return EXIT_OK
+
+
+def _cmd_plot(args: argparse.Namespace) -> int:
+    config = load_config(args.config)
+    results_dir = _results_dir(args, config.results.directory)
+    record = ResultsStore(results_dir).load(args.run)
+    _write_plots(record, results_dir, args.types or config.visualization.plot_types, required=True)
     return EXIT_OK
 
 
@@ -106,7 +147,7 @@ def _cmd_compare(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
-COMMANDS = {"run": _cmd_run, "list": _cmd_list, "show": _cmd_show, "compare": _cmd_compare}
+COMMANDS = {"run": _cmd_run, "list": _cmd_list, "show": _cmd_show, "plot": _cmd_plot, "compare": _cmd_compare}
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -116,7 +157,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         return COMMANDS[args.command](args)
-    except (ConfigError, RunnerError, ResultsError) as exc:
+    except (ConfigError, RunnerError, ResultsError, PlottingUnavailableError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return EXIT_ERROR
     except KeyboardInterrupt:
