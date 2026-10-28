@@ -1,24 +1,44 @@
+# Ammeter test framework configuration.
+# Unknown keys are rejected, so typos fail fast. See src/utils/config.py for the schema.
+
 testing:
   sampling:
-    measurements_count: NULL
-    total_duration_seconds: NULL
-    sampling_frequency_hz: NULL
+    # Set any TWO of the three; the third is derived. If all three are set they must agree
+    # (measurements_count == total_duration_seconds * sampling_frequency_hz).
+    measurements_count: 20
+    total_duration_seconds: null
+    sampling_frequency_hz: 10
 
+# How to reach each ammeter. Every ammeter uses the same text protocol (send the command,
+# read back a float), so adding a 4th ammeter only needs a new entry here.
 ammeters:
-#  greenlee:
-#    port: 5000
-#    command: "MEASURE_GREENLEE -get_measurement"
-#  entes:
-#    port: 5001
-#    command: "MEASURE_ENTES -get_data"
-#  circutor:
-#    port: 5002
-#    command: "MEASURE_CIRCUTOR -get_measurement"
+  greenlee:
+    host: localhost
+    port: 5000
+    command: "MEASURE_GREENLEE -get_measurement"
+  entes:
+    host: localhost
+    port: 5001
+    command: "MEASURE_ENTES -get_data"
+  circutor:
+    host: localhost
+    port: 5002
+    command: "MEASURE_CIRCUTOR -get_measurement -current"
+
+client:
+  timeout_seconds: 2.0      # per attempt
+  retries: 2                # extra attempts after the first failure
+  retry_delay_seconds: 0.1
 
 analysis:
-  statistical_metrics:
+  outlier_z_threshold: 3.0  # |z-score| above this counts as an outlier
   visualization:
-    enabled: true
-    plot_types:
+    enabled: true           # requires matplotlib (optional); skipped with a warning if missing
+    plot_types: [histogram, time_series]
 
 result_management:
+  directory: results
+
+logging:
+  level: INFO
+  to_file: true
