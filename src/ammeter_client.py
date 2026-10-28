@@ -56,6 +56,7 @@ class AmmeterClient:
         self._timeout = client.timeout_seconds
         self._retries = client.retries
         self._retry_delay = client.retry_delay_seconds
+        self.last_attempts = 0  # attempts used by the most recent measure() call
 
     @property
     def name(self) -> str:
@@ -69,6 +70,7 @@ class AmmeterClient:
         """
         max_attempts = self._retries + 1
         for attempt in range(1, max_attempts + 1):
+            self.last_attempts = attempt
             try:
                 return self._measure_once()
             except AmmeterError as exc:
