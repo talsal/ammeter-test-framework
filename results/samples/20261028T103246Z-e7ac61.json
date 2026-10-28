@@ -1,0 +1,1190 @@
+{
+  "schema_version": 1,
+  "run_id": "20261028T103246Z-e7ac61",
+  "created_at": "2026-10-28T10:32:46+00:00",
+  "label": "sample-with-simulated-faults",
+  "metadata": {
+    "python_version": "3.14.7",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "ammeters": [
+      "circutor",
+      "entes",
+      "greenlee"
+    ],
+    "emulators": "in-process"
+  },
+  "config": {
+    "ammeters": {
+      "greenlee": {
+        "name": "greenlee",
+        "host": "127.0.0.1",
+        "port": 5000,
+        "command": "MEASURE_GREENLEE -get_measurement",
+        "faults": null
+      },
+      "entes": {
+        "name": "entes",
+        "host": "127.0.0.1",
+        "port": 5001,
+        "command": "MEASURE_ENTES -get_data",
+        "faults": {
+          "drop_rate": 0.2,
+          "delay_rate": 0.0,
+          "garbage_rate": 0.1,
+          "error_rate": 0.0,
+          "delay_seconds": 3.0,
+          "seed": 7
+        }
+      },
+      "circutor": {
+        "name": "circutor",
+        "host": "127.0.0.1",
+        "port": 5002,
+        "command": "MEASURE_CIRCUTOR -get_measurement -current",
+        "faults": {
+          "drop_rate": 0.0,
+          "delay_rate": 0.1,
+          "garbage_rate": 0.0,
+          "error_rate": 0.15,
+          "delay_seconds": 1.0,
+          "seed": 7
+        }
+      }
+    },
+    "sampling": {
+      "measurements_count": 30,
+      "total_duration_seconds": null,
+      "sampling_frequency_hz": 20,
+      "count": 30,
+      "interval_seconds": 0.05,
+      "duration_seconds": 1.5
+    },
+    "client": {
+      "timeout_seconds": 0.5,
+      "retries": 2,
+      "retry_delay_seconds": 0.05
+    },
+    "analysis": {
+      "outlier_z_threshold": 3.0
+    },
+    "visualization": {
+      "enabled": true,
+      "plot_types": [
+        "histogram",
+        "time_series",
+        "precision"
+      ]
+    },
+    "results": {
+      "directory": "results"
+    },
+    "logging": {
+      "level": "WARNING",
+      "to_file": true
+    }
+  },
+  "ammeters": {
+    "greenlee": {
+      "sampling": {
+        "ammeter": "greenlee",
+        "started_at": "2026-10-28T10:32:46.954+00:00",
+        "planned_count": 30,
+        "interval_seconds": 0.05,
+        "elapsed_seconds": 1.4504197090864182,
+        "samples": [
+          {
+            "index": 0,
+            "scheduled_s": 0.0,
+            "started_s": 1.1669471859931946e-06,
+            "latency_s": 0.0016327081248164177,
+            "value": 0.08120437653052592,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.1669471859931946e-06
+          },
+          {
+            "index": 1,
+            "scheduled_s": 0.05,
+            "started_s": 0.05000166711397469,
+            "latency_s": 0.00024991692043840885,
+            "value": 0.24838511842954333,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.6671139746876618e-06
+          },
+          {
+            "index": 2,
+            "scheduled_s": 0.1,
+            "started_s": 0.10000079195015132,
+            "latency_s": 0.00027462514117360115,
+            "value": 0.10691774944344261,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 7.91950151318721e-07
+          },
+          {
+            "index": 3,
+            "scheduled_s": 0.15000000000000002,
+            "started_s": 0.15002154209651053,
+            "latency_s": 0.00034470786340534687,
+            "value": 0.04664802274870693,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.1542096510507314e-05
+          },
+          {
+            "index": 4,
+            "scheduled_s": 0.2,
+            "started_s": 0.20000183396041393,
+            "latency_s": 0.0003506659995764494,
+            "value": 0.07270539340379571,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.833960413921698e-06
+          },
+          {
+            "index": 5,
+            "scheduled_s": 0.25,
+            "started_s": 0.25000104191713035,
+            "latency_s": 0.0004468329716473818,
+            "value": 0.3567934465381383,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.0419171303510666e-06
+          },
+          {
+            "index": 6,
+            "scheduled_s": 0.30000000000000004,
+            "started_s": 0.3000014170538634,
+            "latency_s": 0.0004214998334646225,
+            "value": 0.18681274362764222,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.4170538633617724e-06
+          },
+          {
+            "index": 7,
+            "scheduled_s": 0.35000000000000003,
+            "started_s": 0.3500009588897228,
+            "latency_s": 0.0004548751749098301,
+            "value": 0.2653354374046705,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 9.5888972279079e-07
+          },
+          {
+            "index": 8,
+            "scheduled_s": 0.4,
+            "started_s": 0.4000422500539571,
+            "latency_s": 0.0007313748355954885,
+            "value": 0.16123459621135514,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 4.225005395708248e-05
+          },
+          {
+            "index": 9,
+            "scheduled_s": 0.45,
+            "started_s": 0.4500397499650717,
+            "latency_s": 0.0007127500139176846,
+            "value": 0.5401459763390659,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 3.974996507166706e-05
+          },
+          {
+            "index": 10,
+            "scheduled_s": 0.5,
+            "started_s": 0.5000057090073824,
+            "latency_s": 0.0007689159829169512,
+            "value": 0.10781865848616771,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 5.709007382392883e-06
+          },
+          {
+            "index": 11,
+            "scheduled_s": 0.55,
+            "started_s": 0.5500195419881493,
+            "latency_s": 0.0004700829740613699,
+            "value": 0.09252322698377767,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.9541988149240908e-05
+          },
+          {
+            "index": 12,
+            "scheduled_s": 0.6000000000000001,
+            "started_s": 0.6000032499432564,
+            "latency_s": 0.0004782089963555336,
+            "value": 0.10020134559401475,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 3.249943256289356e-06
+          },
+          {
+            "index": 13,
+            "scheduled_s": 0.65,
+            "started_s": 0.6500012499745935,
+            "latency_s": 0.0003587091341614723,
+            "value": 0.04996675465307045,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.24997459349796e-06
+          },
+          {
+            "index": 14,
+            "scheduled_s": 0.7000000000000001,
+            "started_s": 0.7000235000159591,
+            "latency_s": 0.0006417499389499426,
+            "value": 0.3214980917334499,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.3500015959077025e-05
+          },
+          {
+            "index": 15,
+            "scheduled_s": 0.75,
+            "started_s": 0.7500109169632196,
+            "latency_s": 0.00038275006227195263,
+            "value": 0.22442303583040102,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.091696321964264e-05
+          },
+          {
+            "index": 16,
+            "scheduled_s": 0.8,
+            "started_s": 0.8000057919416577,
+            "latency_s": 0.0007066251710057259,
+            "value": 5.47052592416952,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 5.791941657617983e-06
+          },
+          {
+            "index": 17,
+            "scheduled_s": 0.8500000000000001,
+            "started_s": 0.8500353340059519,
+            "latency_s": 0.0006157909519970417,
+            "value": 0.017375511025213317,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 3.533400595179259e-05
+          },
+          {
+            "index": 18,
+            "scheduled_s": 0.9,
+            "started_s": 0.9000018339138478,
+            "latency_s": 0.000409125117585063,
+            "value": 0.3371824641258748,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.833913847781865e-06
+          },
+          {
+            "index": 19,
+            "scheduled_s": 0.9500000000000001,
+            "started_s": 0.9500332919415087,
+            "latency_s": 0.0006395000964403152,
+            "value": 0.14607648014609145,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 3.3291941508584166e-05
+          },
+          {
+            "index": 20,
+            "scheduled_s": 1.0,
+            "started_s": 1.000005542067811,
+            "latency_s": 0.0007646668236702681,
+            "value": 0.0627166164197634,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 5.542067810893059e-06
+          },
+          {
+            "index": 21,
+            "scheduled_s": 1.05,
+            "started_s": 1.050036875065416,
+            "latency_s": 0.0007167088333517313,
+            "value": 0.9648326420077005,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 3.687506541605323e-05
+          },
+          {
+            "index": 22,
+            "scheduled_s": 1.1,
+            "started_s": 1.1000016669277102,
+            "latency_s": 0.00044991704635322094,
+            "value": 0.059507647128118776,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.6669277100866964e-06
+          },
+          {
+            "index": 23,
+            "scheduled_s": 1.1500000000000001,
+            "started_s": 1.1500015840865672,
+            "latency_s": 0.0003684579860419035,
+            "value": 0.18743364851022123,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.5840865670302406e-06
+          },
+          {
+            "index": 24,
+            "scheduled_s": 1.2000000000000002,
+            "started_s": 1.2000117499846965,
+            "latency_s": 0.0003683750983327627,
+            "value": 0.25201612429326153,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.1749984696329818e-05
+          },
+          {
+            "index": 25,
+            "scheduled_s": 1.25,
+            "started_s": 1.2500046249479055,
+            "latency_s": 0.0007196669466793537,
+            "value": 0.04248632657030446,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 4.624947905540466e-06
+          },
+          {
+            "index": 26,
+            "scheduled_s": 1.3,
+            "started_s": 1.3000048340763897,
+            "latency_s": 0.000530333025380969,
+            "value": 0.07910372902894904,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 4.834076389625963e-06
+          },
+          {
+            "index": 27,
+            "scheduled_s": 1.35,
+            "started_s": 1.3500021670479327,
+            "latency_s": 0.0004319169092923403,
+            "value": 0.1010560905261037,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.1670479326552083e-06
+          },
+          {
+            "index": 28,
+            "scheduled_s": 1.4000000000000001,
+            "started_s": 1.4000016250647604,
+            "latency_s": 0.0003500839229673147,
+            "value": 0.7685813396306661,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.6250647603133217e-06
+          },
+          {
+            "index": 29,
+            "scheduled_s": 1.4500000000000002,
+            "started_s": 1.450001833960414,
+            "latency_s": 0.00041033304296433926,
+            "value": 0.07642435279795773,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.8339604137551646e-06
+          }
+        ],
+        "failure_count": 0,
+        "error_summary": {},
+        "max_lateness_s": 4.225005395708248e-05,
+        "mean_lateness_s": 1.0844762436996077e-05
+      },
+      "analysis": {
+        "ammeter": "greenlee",
+        "requested": 30,
+        "successful": 30,
+        "success_rate": 1.0,
+        "retried_count": 0,
+        "current": {
+          "count": 30,
+          "mean": 0.38426442901125046,
+          "median": 0.12694756931612958,
+          "stdev": 0.9845015214893301,
+          "minimum": 0.017375511025213317,
+          "maximum": 5.47052592416952,
+          "cv": 2.5620417794656345,
+          "outlier_count": 1
+        },
+        "consistency": "poor",
+        "latency_mean_s": 0.0005400624979908268,
+        "latency_max_s": 0.0016327081248164177,
+        "max_lateness_s": 4.225005395708248e-05
+      }
+    },
+    "entes": {
+      "sampling": {
+        "ammeter": "entes",
+        "started_at": "2026-10-28T10:32:48.405+00:00",
+        "planned_count": 30,
+        "interval_seconds": 0.05,
+        "elapsed_seconds": 1.506809291895479,
+        "samples": [
+          {
+            "index": 0,
+            "scheduled_s": 0.0,
+            "started_s": 1.583946868777275e-06,
+            "latency_s": 0.0003252909518778324,
+            "value": 81.05964631194617,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.583946868777275e-06
+          },
+          {
+            "index": 1,
+            "scheduled_s": 0.05,
+            "started_s": 0.05001587490551174,
+            "latency_s": 0.053752291947603226,
+            "value": 49.48533181378291,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 1.5874905511734094e-05
+          },
+          {
+            "index": 2,
+            "scheduled_s": 0.1,
+            "started_s": 0.10377745889127254,
+            "latency_s": 0.054055375047028065,
+            "value": 62.99899731649509,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 0.0037774588912725393
+          },
+          {
+            "index": 3,
+            "scheduled_s": 0.15000000000000002,
+            "started_s": 0.15784420887939632,
+            "latency_s": 0.00023141596466302872,
+            "value": 79.61160075363608,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.007844208879396297
+          },
+          {
+            "index": 4,
+            "scheduled_s": 0.2,
+            "started_s": 0.20000829198397696,
+            "latency_s": 0.054412666941061616,
+            "value": 52.55907823616093,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 8.29198397694908e-06
+          },
+          {
+            "index": 5,
+            "scheduled_s": 0.25,
+            "started_s": 0.2544345420319587,
+            "latency_s": 0.056087750010192394,
+            "value": 99.92594306743767,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 0.004434542031958699
+          },
+          {
+            "index": 6,
+            "scheduled_s": 0.30000000000000004,
+            "started_s": 0.3105397089384496,
+            "latency_s": 0.1073118329513818,
+            "value": 22.54045305358413,
+            "error_type": null,
+            "error": null,
+            "attempts": 3,
+            "lateness_s": 0.010539708938449577
+          },
+          {
+            "index": 7,
+            "scheduled_s": 0.35000000000000003,
+            "started_s": 0.4178677089512348,
+            "latency_s": 0.0002889998722821474,
+            "value": 93.30504955267145,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.06786770895123478
+          },
+          {
+            "index": 8,
+            "scheduled_s": 0.4,
+            "started_s": 0.41816387488506734,
+            "latency_s": 0.10982499993406236,
+            "value": 138.1563796230204,
+            "error_type": null,
+            "error": null,
+            "attempts": 3,
+            "lateness_s": 0.01816387488506732
+          },
+          {
+            "index": 9,
+            "scheduled_s": 0.45,
+            "started_s": 0.5280352500267327,
+            "latency_s": 0.0005307919345796108,
+            "value": 88.75553578461795,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.07803525002673267
+          },
+          {
+            "index": 10,
+            "scheduled_s": 0.5,
+            "started_s": 0.5285747919697315,
+            "latency_s": 0.0002730828709900379,
+            "value": 87.81741719704623,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.02857479196973145
+          },
+          {
+            "index": 11,
+            "scheduled_s": 0.55,
+            "started_s": 0.5500062089413404,
+            "latency_s": 0.0007410829421132803,
+            "value": 24.93581891600102,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 6.208941340402063e-06
+          },
+          {
+            "index": 12,
+            "scheduled_s": 0.6000000000000001,
+            "started_s": 0.6000064588151872,
+            "latency_s": 0.0007723751477897167,
+            "value": 106.89279666584663,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 6.458815187126987e-06
+          },
+          {
+            "index": 13,
+            "scheduled_s": 0.65,
+            "started_s": 0.6500065419822931,
+            "latency_s": 0.05653129192069173,
+            "value": 124.13494720464975,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 6.541982293106763e-06
+          },
+          {
+            "index": 14,
+            "scheduled_s": 0.7000000000000001,
+            "started_s": 0.7065571669954807,
+            "latency_s": 0.11108562489971519,
+            "value": null,
+            "error_type": "AmmeterMalformedResponseError",
+            "error": "entes: empty reply",
+            "attempts": 3,
+            "lateness_s": 0.00655716699548059
+          },
+          {
+            "index": 15,
+            "scheduled_s": 0.75,
+            "started_s": 0.8176593750249594,
+            "latency_s": 0.0003802918363362551,
+            "value": 141.46434335237484,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.06765937502495944
+          },
+          {
+            "index": 16,
+            "scheduled_s": 0.8,
+            "started_s": 0.8180466250050813,
+            "latency_s": 0.00025279191322624683,
+            "value": 97.4285594480433,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.01804662500508125
+          },
+          {
+            "index": 17,
+            "scheduled_s": 0.8500000000000001,
+            "started_s": 0.8500368339009583,
+            "latency_s": 0.05651754094287753,
+            "value": 72.04933248292672,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 3.683390095821082e-05
+          },
+          {
+            "index": 18,
+            "scheduled_s": 0.9,
+            "started_s": 0.9065707088448107,
+            "latency_s": 0.0002494580112397671,
+            "value": 36.338365562332896,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.006570708844810702
+          },
+          {
+            "index": 19,
+            "scheduled_s": 0.9500000000000001,
+            "started_s": 0.9500184589996934,
+            "latency_s": 0.00044104084372520447,
+            "value": 48.48545072745787,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 1.8458999693327094e-05
+          },
+          {
+            "index": 20,
+            "scheduled_s": 1.0,
+            "started_s": 1.0000032919924706,
+            "latency_s": 0.0004766250494867563,
+            "value": 17.6524473017699,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 3.2919924706220627e-06
+          },
+          {
+            "index": 21,
+            "scheduled_s": 1.05,
+            "started_s": 1.0500035418663174,
+            "latency_s": 0.11106520798057318,
+            "value": null,
+            "error_type": "AmmeterMalformedResponseError",
+            "error": "entes: reply is not a number: '3.14.15-not-a-number'",
+            "attempts": 3,
+            "lateness_s": 3.5418663173469866e-06
+          },
+          {
+            "index": 22,
+            "scheduled_s": 1.1,
+            "started_s": 1.1610826249234378,
+            "latency_s": 0.00030274991877377033,
+            "value": 147.0994414388435,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.061082624923437745
+          },
+          {
+            "index": 23,
+            "scheduled_s": 1.1500000000000001,
+            "started_s": 1.1613920000381768,
+            "latency_s": 0.0002171248197555542,
+            "value": 155.4681444499238,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.011392000038176642
+          },
+          {
+            "index": 24,
+            "scheduled_s": 1.2000000000000002,
+            "started_s": 1.2000223340000957,
+            "latency_s": 0.0004662908613681793,
+            "value": 24.67539160625468,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.2334000095547424e-05
+          },
+          {
+            "index": 25,
+            "scheduled_s": 1.25,
+            "started_s": 1.250005834037438,
+            "latency_s": 0.0007712908554822206,
+            "value": 88.91933233068113,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 5.834037438035011e-06
+          },
+          {
+            "index": 26,
+            "scheduled_s": 1.3,
+            "started_s": 1.3000345840118825,
+            "latency_s": 0.000691999914124608,
+            "value": 104.06822613580592,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 3.4584011882499155e-05
+          },
+          {
+            "index": 27,
+            "scheduled_s": 1.35,
+            "started_s": 1.3500385419465601,
+            "latency_s": 0.056265125051140785,
+            "value": 18.32895772071611,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 3.8541946560055607e-05
+          },
+          {
+            "index": 28,
+            "scheduled_s": 1.4000000000000001,
+            "started_s": 1.4063216669019312,
+            "latency_s": 0.00033425004221498966,
+            "value": 40.107799623649335,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.006321666901931033
+          },
+          {
+            "index": 29,
+            "scheduled_s": 1.4500000000000002,
+            "started_s": 1.4500064169988036,
+            "latency_s": 0.05678516696207225,
+            "value": 65.8794884252927,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 6.416998803437934e-06
+          }
+        ],
+        "failure_count": 2,
+        "error_summary": {
+          "AmmeterMalformedResponseError": 2
+        },
+        "max_lateness_s": 0.07803525002673267,
+        "mean_lateness_s": 0.013236083687903931
+      },
+      "analysis": {
+        "ammeter": "entes",
+        "requested": 30,
+        "successful": 28,
+        "success_rate": 0.9333333333333333,
+        "retried_count": 12,
+        "current": {
+          "count": 28,
+          "mean": 77.50515271796318,
+          "median": 80.33562353279112,
+          "stdev": 40.97968448268351,
+          "minimum": 17.6524473017699,
+          "maximum": 155.4681444499238,
+          "cv": 0.528734968522754,
+          "outlier_count": 0
+        },
+        "consistency": "poor",
+        "latency_mean_s": 0.023903249837790748,
+        "latency_max_s": 0.10982499993406236,
+        "max_lateness_s": 0.07803525002673267
+      }
+    },
+    "circutor": {
+      "sampling": {
+        "ammeter": "circutor",
+        "started_at": "2026-10-28T10:32:49.912+00:00",
+        "planned_count": 30,
+        "interval_seconds": 0.05,
+        "elapsed_seconds": 4.599377332953736,
+        "samples": [
+          {
+            "index": 0,
+            "scheduled_s": 0.0,
+            "started_s": 5.708076059818268e-06,
+            "latency_s": 0.00040095788426697254,
+            "value": 0.03679932375223026,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 5.708076059818268e-06
+          },
+          {
+            "index": 1,
+            "scheduled_s": 0.05,
+            "started_s": 0.050004250137135386,
+            "latency_s": 0.0006456249393522739,
+            "value": null,
+            "error_type": "AmmeterRejectedError",
+            "error": "circutor: ammeter replied 'ERROR SIMULATED_FAULT'",
+            "attempts": 1,
+            "lateness_s": 4.250137135383691e-06
+          },
+          {
+            "index": 2,
+            "scheduled_s": 0.1,
+            "started_s": 0.10000366601161659,
+            "latency_s": 0.00034300005063414574,
+            "value": 0.022196263591252933,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 3.6660116165820877e-06
+          },
+          {
+            "index": 3,
+            "scheduled_s": 0.15000000000000002,
+            "started_s": 0.15001337509602308,
+            "latency_s": 0.5573580409400165,
+            "value": 0.015699516674551998,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 1.3375096023060529e-05
+          },
+          {
+            "index": 4,
+            "scheduled_s": 0.2,
+            "started_s": 0.7073868331499398,
+            "latency_s": 0.00031545781530439854,
+            "value": 0.03661399002673194,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 0.5073868331499398
+          },
+          {
+            "index": 5,
+            "scheduled_s": 0.25,
+            "started_s": 0.7077086251229048,
+            "latency_s": 0.553592124953866,
+            "value": 0.010048550492824281,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 0.4577086251229048
+          },
+          {
+            "index": 6,
+            "scheduled_s": 0.30000000000000004,
+            "started_s": 1.2613268750719726,
+            "latency_s": 0.5573430000804365,
+            "value": 0.02934008033005625,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 0.9613268750719726
+          },
+          {
+            "index": 7,
+            "scheduled_s": 0.35000000000000003,
+            "started_s": 1.8186862501315773,
+            "latency_s": 1.1097640409134328,
+            "value": 0.021857929738688952,
+            "error_type": null,
+            "error": null,
+            "attempts": 3,
+            "lateness_s": 1.4686862501315772
+          },
+          {
+            "index": 8,
+            "scheduled_s": 0.4,
+            "started_s": 2.928466249955818,
+            "latency_s": 0.00028108316473662853,
+            "value": 0.01039346517345472,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.528466249955818
+          },
+          {
+            "index": 9,
+            "scheduled_s": 0.45,
+            "started_s": 2.928753250045702,
+            "latency_s": 0.00037349993363022804,
+            "value": null,
+            "error_type": "AmmeterRejectedError",
+            "error": "circutor: ammeter replied 'ERROR SIMULATED_FAULT'",
+            "attempts": 1,
+            "lateness_s": 2.4787532500457017
+          },
+          {
+            "index": 10,
+            "scheduled_s": 0.5,
+            "started_s": 2.929131125099957,
+            "latency_s": 0.00029799994081258774,
+            "value": null,
+            "error_type": "AmmeterRejectedError",
+            "error": "circutor: ammeter replied 'ERROR SIMULATED_FAULT'",
+            "attempts": 1,
+            "lateness_s": 2.429131125099957
+          },
+          {
+            "index": 11,
+            "scheduled_s": 0.55,
+            "started_s": 2.9294330831617117,
+            "latency_s": 0.0002458328381180763,
+            "value": 0.020575370677862363,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.379433083161712
+          },
+          {
+            "index": 12,
+            "scheduled_s": 0.6000000000000001,
+            "started_s": 2.9296831251122057,
+            "latency_s": 0.00021558301523327827,
+            "value": 0.01657224065422517,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.3296831251122057
+          },
+          {
+            "index": 13,
+            "scheduled_s": 0.65,
+            "started_s": 2.929902750067413,
+            "latency_s": 0.00021974998526275158,
+            "value": 0.040515926317283575,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.279902750067413
+          },
+          {
+            "index": 14,
+            "scheduled_s": 0.7000000000000001,
+            "started_s": 2.9301279161591083,
+            "latency_s": 0.00021037482656538486,
+            "value": 0.053094481172858594,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.230127916159108
+          },
+          {
+            "index": 15,
+            "scheduled_s": 0.75,
+            "started_s": 2.930342083098367,
+            "latency_s": 0.00021779187954962254,
+            "value": 0.01098249259379537,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.180342083098367
+          },
+          {
+            "index": 16,
+            "scheduled_s": 0.8,
+            "started_s": 2.9305630831513554,
+            "latency_s": 0.5572356248740107,
+            "value": 0.019358357844306753,
+            "error_type": null,
+            "error": null,
+            "attempts": 2,
+            "lateness_s": 2.1305630831513556
+          },
+          {
+            "index": 17,
+            "scheduled_s": 0.8500000000000001,
+            "started_s": 3.4878129160497338,
+            "latency_s": 0.0003686249256134033,
+            "value": 0.0457267365629345,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.6378129160497337
+          },
+          {
+            "index": 18,
+            "scheduled_s": 0.9,
+            "started_s": 3.4881880411412567,
+            "latency_s": 0.0004566248971968889,
+            "value": null,
+            "error_type": "AmmeterRejectedError",
+            "error": "circutor: ammeter replied 'ERROR SIMULATED_FAULT'",
+            "attempts": 1,
+            "lateness_s": 2.588188041141257
+          },
+          {
+            "index": 19,
+            "scheduled_s": 0.9500000000000001,
+            "started_s": 3.488649999955669,
+            "latency_s": 0.0003532501868903637,
+            "value": null,
+            "error_type": "AmmeterRejectedError",
+            "error": "circutor: ammeter replied 'ERROR SIMULATED_FAULT'",
+            "attempts": 1,
+            "lateness_s": 2.538649999955669
+          },
+          {
+            "index": 20,
+            "scheduled_s": 1.0,
+            "started_s": 3.4890092499554157,
+            "latency_s": 0.00026625022292137146,
+            "value": 0.05250063520335382,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.4890092499554157
+          },
+          {
+            "index": 21,
+            "scheduled_s": 1.05,
+            "started_s": 3.4892792080063373,
+            "latency_s": 0.00024479208514094353,
+            "value": 0.03257808832700992,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.4392792080063375
+          },
+          {
+            "index": 22,
+            "scheduled_s": 1.1,
+            "started_s": 3.4895307500846684,
+            "latency_s": 0.00030641607008874416,
+            "value": null,
+            "error_type": "AmmeterRejectedError",
+            "error": "circutor: ammeter replied 'ERROR SIMULATED_FAULT'",
+            "attempts": 1,
+            "lateness_s": 2.3895307500846683
+          },
+          {
+            "index": 23,
+            "scheduled_s": 1.1500000000000001,
+            "started_s": 3.4898413750343025,
+            "latency_s": 0.00023000012151896954,
+            "value": 0.042905750584579495,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.339841375034302
+          },
+          {
+            "index": 24,
+            "scheduled_s": 1.2000000000000002,
+            "started_s": 3.490075791021809,
+            "latency_s": 0.0002392090391367674,
+            "value": 0.045295650864154026,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.290075791021809
+          },
+          {
+            "index": 25,
+            "scheduled_s": 1.25,
+            "started_s": 3.4903200410772115,
+            "latency_s": 0.00024212501011788845,
+            "value": 0.022030466114446267,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.2403200410772115
+          },
+          {
+            "index": 26,
+            "scheduled_s": 1.3,
+            "started_s": 3.4905657081399113,
+            "latency_s": 0.0002556669060140848,
+            "value": 0.04886458739215764,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 2.1905657081399115
+          },
+          {
+            "index": 27,
+            "scheduled_s": 1.35,
+            "started_s": 3.490824541077018,
+            "latency_s": 1.108026583911851,
+            "value": null,
+            "error_type": "AmmeterRejectedError",
+            "error": "circutor: ammeter replied 'ERROR SIMULATED_FAULT'",
+            "attempts": 3,
+            "lateness_s": 2.1408245410770177
+          },
+          {
+            "index": 28,
+            "scheduled_s": 1.4000000000000001,
+            "started_s": 4.598864708095789,
+            "latency_s": 0.00028983294032514095,
+            "value": 0.04713214643782584,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 3.1988647080957886
+          },
+          {
+            "index": 29,
+            "scheduled_s": 1.4500000000000002,
+            "started_s": 4.59915916598402,
+            "latency_s": 0.00021504214964807034,
+            "value": 0.015579780129243288,
+            "error_type": null,
+            "error": null,
+            "attempts": 1,
+            "lateness_s": 3.1491591659840195
+          }
+        ],
+        "failure_count": 7,
+        "error_summary": {
+          "AmmeterRejectedError": 7
+        },
+        "max_lateness_s": 3.1988647080957886,
+        "mean_lateness_s": 1.8997886581424004
+      },
+      "analysis": {
+        "ammeter": "circutor",
+        "requested": 30,
+        "successful": 23,
+        "success_rate": 0.7666666666666667,
+        "retried_count": 6,
+        "current": {
+          "count": 23,
+          "mean": 0.030289644811122955,
+          "median": 0.02934008033005625,
+          "stdev": 0.014573078928612485,
+          "minimum": 0.010048550492824281,
+          "maximum": 0.053094481172858594,
+          "cv": 0.48112412738695975,
+          "outlier_count": 0
+        },
+        "consistency": "poor",
+        "latency_mean_s": 0.14522148724442915,
+        "latency_max_s": 1.1097640409134328,
+        "max_lateness_s": 3.1988647080957886
+      }
+    }
+  }
+}

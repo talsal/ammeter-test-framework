@@ -1,0 +1,25 @@
+Run 20261028T103230Z-586431  [sample-clean]
+Started: 2026-10-28T10:32:30+00:00
+Plan:    50 samples per ammeter, one every 100 ms (10 Hz), 5 s
+Saved:   results/samples/20261028T103230Z-586431.json
+
+Ammeter      OK  Mean (A)  Median (A)  Stdev (A)  Min (A)  Max (A)      CV  Outliers  Consistency  Latency (ms)  Max late (ms)
+--------  -----  --------  ----------  ---------  -------  -------  ------  --------  -----------  ------------  -------------
+circutor  50/50   0.03317     0.03336    0.01606  0.00648   0.0608   48.4%         0         poor          0.59           0.05
+entes     50/50     68.02       60.74      35.05     16.7    158.5   51.5%         0         poor          0.66           0.05
+greenlee  50/50     1.079      0.1608      4.016  0.01283    26.73  372.2%         1         poor          0.81           0.05
+
+No failed samples.
+
+Ammeter ranking (reliability first, then precision):
+
+Rank   Ammeter  Success      CV   CV 95% interval  IQR/median  Latency (ms)
+----  --------  -------  ------  ----------------  ----------  ------------
+1     circutor     100%   48.4%    39.0% .. 57.7%       85.8%          0.59
+2        entes     100%   51.5%    42.8% .. 60.0%       71.6%          0.66
+3     greenlee     100%  372.2%  122.9% .. 497.9%      139.6%          0.81
+
+Most reliable: circutor
+Note: Precision (CV) measures repeatability, not accuracy: there is no reference value, and the ammeters measure different quantities and ranges.
+Note: circutor is not statistically distinguishable from entes: the 95% intervals of their CV overlap.
+Note: By CV, circutor is the most repeatable, but by IQR/median it is entes: extreme values (a heavy-tailed distribution) dominate the CV.
