@@ -2,7 +2,7 @@ from src.ammeter_client import AmmeterClient
 from src.utils.config import AmmeterConfig, ClientConfig
 
 
-def request_current_from_ammeter(port: int, command: bytes, host: str = 'localhost',
+def request_current_from_ammeter(port: int, command: bytes, host: str = '127.0.0.1',
                                  timeout: float = 2.0) -> float:
     """
     Request one measurement and print it (kept for backwards compatibility).

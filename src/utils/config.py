@@ -181,7 +181,7 @@ def _parse_ammeters(raw: Mapping) -> Dict[str, AmmeterConfig]:
             raise ConfigError(f"{where}.port: required, an integer in 1..65535, got {port!r}")
         ammeters[str(name)] = AmmeterConfig(
             name=str(name),
-            host=_string(entry, "host", where, default="localhost"),
+            host=_string(entry, "host", where, default="127.0.0.1"),
             port=port,
             command=_string(entry, "command", where),
         )

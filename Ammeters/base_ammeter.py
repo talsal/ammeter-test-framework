@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class AmmeterEmulatorBase(ABC):
-    def __init__(self, port: int, host: str = "localhost", client_timeout: float = 5.0):
+    def __init__(self, port: int, host: str = "127.0.0.1", client_timeout: float = 5.0):
         """
         :param port: TCP port to listen on. Use 0 to let the OS pick a free port;
                      the real port is then available as ``self.port`` once started.

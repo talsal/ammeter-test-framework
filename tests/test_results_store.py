@@ -1,11 +1,9 @@
 """Tests for the results store: ids, persistence, lookup, listing and comparison."""
 import json
-from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from factories import make_result
-from src.analysis import analyze
+from factories import make_record
 from src.results_store import (
     RUN_ID_PATTERN,
     CorruptRunError,
@@ -14,17 +12,6 @@ from src.results_store import (
     RunNotFoundError,
     RunRecord,
 )
-from src.utils.config import load_config
-
-BASE_TIME = datetime(2026, 10, 28, 10, 15, 30, tzinfo=timezone.utc)
-
-
-def make_record(means=(("greenlee", [1.0, 2.0, 3.0]),), minutes=0, label=None, **kwargs):
-    """A RunRecord built through the normal path: results -> analysis -> record."""
-    sampling = {name: make_result(values, name=name) for name, values in means}
-    analysis = {name: analyze(result) for name, result in sampling.items()}
-    return RunRecord.create(load_config(), sampling, analysis, label=label,
-                            now=BASE_TIME + timedelta(minutes=minutes), **kwargs)
 
 
 @pytest.fixture

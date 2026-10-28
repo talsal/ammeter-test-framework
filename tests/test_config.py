@@ -35,6 +35,12 @@ def test_shipped_config_matches_emulators():
     assert [ammeters[n].port for n in emulators] == [5000, 5001, 5002]
 
 
+def test_shipped_hosts_are_explicit_ipv4():
+    """Emulators bind IPv4 only; "localhost" can resolve to ::1 first and reach a different process
+    (on macOS, port 5000 is held by the AirPlay Receiver on IPv6)."""
+    assert {a.host for a in load_config().ammeters.values()} == {"127.0.0.1"}
+
+
 def test_to_dict_is_json_serialisable_and_has_derived_sampling():
     import json
     data = load_config().to_dict()
@@ -94,7 +100,7 @@ def test_invalid_config_raises_with_a_helpful_message(raw, fragment):
 
 def test_defaults_are_applied_for_optional_sections():
     config = parse_config(make())
-    assert config.ammeters["greenlee"].host == "localhost"
+    assert config.ammeters["greenlee"].host == "127.0.0.1"   # explicit IPv4, see config.yaml
     assert config.client.retries == 2
     assert config.visualization.plot_types == ("histogram", "time_series")
 
