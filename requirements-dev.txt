@@ -1,0 +1,4 @@
+# Everything needed to run the framework with plots and to run the tests
+-r requirements.txt
+-r requirements-optional.txt
+pytest>=7.0

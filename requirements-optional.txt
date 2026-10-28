@@ -1,0 +1,3 @@
+# Optional: only needed for the plots (histogram, time series, precision chart).
+# Everything else works without it; plots are skipped with a warning if it is missing.
+matplotlib>=3.9
